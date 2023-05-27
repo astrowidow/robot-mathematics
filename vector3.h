@@ -11,6 +11,25 @@ typedef struct {
 } Vector3;
 
 /**
+ * @brief Function to create a position vector
+ * 
+ * @param x Value of the x component
+ * @param y Value of the y component
+ * @param z Value of the z component
+ * @return vector
+ */
+Vector3 Vector3_create(const double x, const double y, const double z)
+{
+    Vector3 vector;
+
+    vector.x = x;
+    vector.y = y;
+    vector.z = z;
+
+    return vector;
+}
+
+/**
  * @brief Scales a 3D vector by a scalar value
  * 
  * @param v The vector to be scaled
