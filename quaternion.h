@@ -108,17 +108,18 @@ Quaternion Quaternion_inverse(const Quaternion q)
  */
 Quaternion EulerZYX2Quaternion(EulerAngles angles) {
     Quaternion q;
+    double cy, sy, cp, sp, cr, sr;
     EulerAngles angles_radian;
 
     angles_radian = EulerAngles_radians(angles);
 
     // Abbreviations for the various angular functions
-    double cy = cos(angles_radian.z * 0.5);
-    double sy = sin(angles_radian.z * 0.5);
-    double cp = cos(angles_radian.y * 0.5);
-    double sp = sin(angles_radian.y * 0.5);
-    double cr = cos(angles_radian.x * 0.5);
-    double sr = sin(angles_radian.x * 0.5);
+    cy = cos(angles_radian.z * 0.5);
+    sy = sin(angles_radian.z * 0.5);
+    cp = cos(angles_radian.y * 0.5);
+    sp = sin(angles_radian.y * 0.5);
+    cr = cos(angles_radian.x * 0.5);
+    sr = sin(angles_radian.x * 0.5);
 
     q.w = cr * cp * cy + sr * sp * sy;
     q.x = sr * cp * cy - cr * sp * sy;
@@ -178,17 +179,18 @@ EulerAngles Quaternion2EulerZYX(Quaternion q) {
  */
 Quaternion EulerXYZ2Quaternion(EulerAngles angles) {
     Quaternion q;
+    double cy, sy, cp, sp, cr, sr;
     EulerAngles angles_radian;
 
     angles_radian = EulerAngles_radians(angles);
 
     // Abbreviations for the various angular functions
-    double cy = cos(angles_radian.z * 0.5);
-    double sy = sin(angles_radian.z * 0.5);
-    double cp = cos(angles_radian.y * 0.5);
-    double sp = sin(angles_radian.y * 0.5);
-    double cr = cos(angles_radian.x * 0.5);
-    double sr = sin(angles_radian.x * 0.5);
+    cy = cos(angles_radian.z * 0.5);
+    sy = sin(angles_radian.z * 0.5);
+    cp = cos(angles_radian.y * 0.5);
+    sp = sin(angles_radian.y * 0.5);
+    cr = cos(angles_radian.x * 0.5);
+    sr = sin(angles_radian.x * 0.5);
 
     q.w = cr * cp * cy - sr * sp * sy;
     q.x = sr * cp * cy + cr * sp * sy;
