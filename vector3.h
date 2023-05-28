@@ -2,7 +2,6 @@
 #define __VECTOR3_H__
 
 #include <math.h>
-#include "quaternion.h"
 
 typedef struct {
     double x;

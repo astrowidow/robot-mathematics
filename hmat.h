@@ -64,8 +64,33 @@ Hmat Hmat_composite(const Hmat h_a2b, const Hmat h_b2c)
  */
 Hmat Hmat_relative(const Hmat h_i2c, const Hmat h_i2a)
 {
-    Hmat h_a2i = Hmat_inverse(h_i2a);
+    Hmat h_a2i;
+    h_a2i = Hmat_inverse(h_i2a);
     return Hmat_composite(h_a2i, h_i2c);
+}
+
+/**
+ * @brief Compute the average hmat from h_i2a and h_i2b
+ * 
+ * @param h_i2b 
+ * @param h_i2a 
+ * @return h_i2c c is a midpoint of a and b
+ */
+Hmat Hmat_average(const Hmat h_i2b, const Hmat h_i2a)
+{
+    Hmat h_a2b, h_a2c;
+    RotAxisAngle axis_angle;
+
+    // calc pos average
+    h_a2b = Hmat_relative(h_i2b, h_i2a);
+    h_a2c.pos = Vector3_multiply(0.5, h_a2b.pos);
+    
+    // calc pose average
+    axis_angle = Quaternion2RotAxisAngle(h_a2b.quat);
+    axis_angle.angle = 0.5*axis_angle.angle;
+    h_a2c.quat = RotAxisAngle2Quaternion(axis_angle);
+
+    return Hmat_composite(h_i2a, h_a2c);
 }
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include "euler_angles.h"
+#include "vector3.h"
 
 typedef struct {
     double x;
@@ -10,6 +11,11 @@ typedef struct {
     double z;
     double w;
 } Quaternion;
+
+typedef struct {
+    Vector3 axis;
+    double angle;
+} RotAxisAngle;
 
 /**
  * @brief Function to return a normalized Quaternion
@@ -19,9 +25,10 @@ typedef struct {
  */
 Quaternion Quaternion_normalize(const Quaternion q)
 {
-    double magnitude = sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
-
     Quaternion normalized;
+    double magnitude;
+
+    magnitude = sqrt(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
     normalized.x = q.x / magnitude;
     normalized.y = q.y / magnitude;
     normalized.z = q.z / magnitude;
@@ -132,22 +139,23 @@ Quaternion EulerZYX2Quaternion(EulerAngles angles) {
  */
 EulerAngles Quaternion2EulerZYX(Quaternion q) {
     EulerAngles angles;
+    double sinr_cosp, cosr_cosp, sinp, siny_cosp, cosy_cosp;
 
     // roll (x-axis rotation)
-    double sinr_cosp = 2.0 * (q.w * q.x + q.y * q.z);
-    double cosr_cosp = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
+    sinr_cosp = 2.0 * (q.w * q.x + q.y * q.z);
+    cosr_cosp = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
     angles.x = atan2(sinr_cosp, cosr_cosp);
 
     // pitch (y-axis rotation)
-    double sinp = 2.0 * (q.w * q.y - q.z * q.x);
+    sinp = 2.0 * (q.w * q.y - q.z * q.x);
     if (fabs(sinp) >= 1)
         angles.y = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
     else
         angles.y = asin(sinp);
 
     // yaw (z-axis rotation)
-    double siny_cosp = 2.0 * (q.w * q.z + q.x * q.y);
-    double cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
+    siny_cosp = 2.0 * (q.w * q.z + q.x * q.y);
+    cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
     angles.z = atan2(siny_cosp, cosy_cosp);
 
     angles.type = ZYX;
@@ -165,7 +173,7 @@ EulerAngles Quaternion2EulerZYX(Quaternion q) {
  * @param angles The input Euler angles in XYZ order
  * @return Quaternion The output normalized Quaternion
  */
-Quaternion euler_to_quaternion_XYZ(EulerAngles angles) {
+Quaternion EulerXYZ2Quaternion(EulerAngles angles) {
     Quaternion q;
 
     // Abbreviations for the various angular functions
@@ -198,27 +206,82 @@ Quaternion euler_to_quaternion_XYZ(EulerAngles angles) {
  */
 EulerAngles Quaternion2EulerXYZ(Quaternion q) {
     EulerAngles angles;
+    double sinr_cosp, cosr_cosp, sinp, siny_cosp, cosy_cosp;
 
     // roll (x-axis rotation)
-    double sinr_cosp = 2.0 * (q.w * q.x - q.y * q.z);
-    double cosr_cosp = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
+    sinr_cosp = 2.0 * (q.w * q.x - q.y * q.z);
+    cosr_cosp = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
     angles.x = atan2(sinr_cosp, cosr_cosp);
 
     // pitch (y-axis rotation)
-    double sinp = 2.0 * (q.w * q.y + q.z * q.x);
+    sinp = 2.0 * (q.w * q.y + q.z * q.x);
     if (fabs(sinp) >= 1)
         angles.y = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
     else
         angles.y = asin(sinp);
 
     // yaw (z-axis rotation)
-    double siny_cosp = 2.0 * (q.w * q.z - q.x * q.y);
-    double cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
+    siny_cosp = 2.0 * (q.w * q.z - q.x * q.y);
+    cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);  
     angles.z = atan2(siny_cosp, cosy_cosp);
 
     angles.type = XYZ;
 
     return angles;
+}
+
+/**
+ * @brief Convert a quaternion to axis-angle representation
+ * 
+ * @param q The quaternion
+ * @return struct RotAxisAngle
+ */
+RotAxisAngle Quaternion2RotAxisAngle(const Quaternion q)
+{
+    RotAxisAngle result;
+    double magnitude;
+    
+    magnitude = sqrt(q.x * q.x + q.y * q.y + q.z * q.z);
+    if (magnitude > 1e-5)
+    {
+        result.axis.x = q.x / magnitude;
+        result.axis.y = q.y / magnitude;
+        result.axis.z = q.z / magnitude;
+        result.angle = 2.0 * acos(q.w);
+    }
+    else
+    {
+        // If the magnitude is zero, we have a zero rotation (or a 180 degree rotation)
+        // We can choose any axis. We'll choose the x-axis for simplicity
+        result.axis.x = 1.0;
+        result.axis.y = 0.0;
+        result.axis.z = 0.0;
+        result.angle = 0.0;
+    }
+    return result;
+}
+
+/**
+ * @brief Convert axis-angle representation to a quaternion
+ * 
+ * @param rotation The rotation in axis-angle representation
+ * @return Quaternion The quaternion representing the same rotation
+ */
+Quaternion RotAxisAngle2Quaternion(const RotAxisAngle rotation)
+{
+    Quaternion q;
+    double half_angle;
+    double s;
+
+    s = sin(half_angle)
+    half_angle = rotation.angle / 2.0;
+
+    q.w = cos(half_angle);
+    q.x = s * rotation.axis.x;
+    q.y = s * rotation.axis.y;
+    q.z = s * rotation.axis.z;
+
+    return q;
 }
 
 #endif
