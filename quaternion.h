@@ -108,14 +108,17 @@ Quaternion Quaternion_inverse(const Quaternion q)
  */
 Quaternion EulerZYX2Quaternion(EulerAngles angles) {
     Quaternion q;
+    EulerAngles angles_radian;
+
+    angles_radian = EulerAngles_radians(angles);
 
     // Abbreviations for the various angular functions
-    double cy = cos(angles.z * 0.5);
-    double sy = sin(angles.z * 0.5);
-    double cp = cos(angles.y * 0.5);
-    double sp = sin(angles.y * 0.5);
-    double cr = cos(angles.x * 0.5);
-    double sr = sin(angles.x * 0.5);
+    double cy = cos(angles_radian.z * 0.5);
+    double sy = sin(angles_radian.z * 0.5);
+    double cp = cos(angles_radian.y * 0.5);
+    double sp = sin(angles_radian.y * 0.5);
+    double cr = cos(angles_radian.x * 0.5);
+    double sr = sin(angles_radian.x * 0.5);
 
     q.w = cr * cp * cy + sr * sp * sy;
     q.x = sr * cp * cy - cr * sp * sy;
@@ -149,7 +152,7 @@ EulerAngles Quaternion2EulerZYX(Quaternion q) {
     // pitch (y-axis rotation)
     sinp = 2.0 * (q.w * q.y - q.z * q.x);
     if (fabs(sinp) >= 1)
-        angles.y = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+        angles.y = ((sinp > 0) ? 1 : -1)*(M_PI / 2); // use 90 degrees if out of range
     else
         angles.y = asin(sinp);
 
@@ -175,14 +178,17 @@ EulerAngles Quaternion2EulerZYX(Quaternion q) {
  */
 Quaternion EulerXYZ2Quaternion(EulerAngles angles) {
     Quaternion q;
+    EulerAngles angles_radian;
+
+    angles_radian = EulerAngles_radians(angles);
 
     // Abbreviations for the various angular functions
-    double cy = cos(angles.z * 0.5);
-    double sy = sin(angles.z * 0.5);
-    double cp = cos(angles.y * 0.5);
-    double sp = sin(angles.y * 0.5);
-    double cr = cos(angles.x * 0.5);
-    double sr = sin(angles.x * 0.5);
+    double cy = cos(angles_radian.z * 0.5);
+    double sy = sin(angles_radian.z * 0.5);
+    double cp = cos(angles_radian.y * 0.5);
+    double sp = sin(angles_radian.y * 0.5);
+    double cr = cos(angles_radian.x * 0.5);
+    double sr = sin(angles_radian.x * 0.5);
 
     q.w = cr * cp * cy - sr * sp * sy;
     q.x = sr * cp * cy + cr * sp * sy;
@@ -216,7 +222,7 @@ EulerAngles Quaternion2EulerXYZ(Quaternion q) {
     // pitch (y-axis rotation)
     sinp = 2.0 * (q.w * q.y + q.z * q.x);
     if (fabs(sinp) >= 1)
-        angles.y = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+        angles.y = ((sinp > 0) ? 1 : -1)*(M_PI / 2); // use 90 degrees if out of range
     else
         angles.y = asin(sinp);
 
@@ -273,8 +279,8 @@ Quaternion RotAxisAngle2Quaternion(const RotAxisAngle rotation)
     double half_angle;
     double s;
 
-    s = sin(half_angle)
     half_angle = rotation.angle / 2.0;
+    s = sin(half_angle);
 
     q.w = cos(half_angle);
     q.x = s * rotation.axis.x;
