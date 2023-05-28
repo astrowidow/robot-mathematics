@@ -32,9 +32,10 @@ typedef struct {
  * @param y Value of the y component
  * @param z Value of the z component
  * @param type rotational sequence
+ * @param unit degree or radian
  * @return euler angles
  */
-EulerAngles EulerAngles_create(const double x, const double y, const double z, const RotationOrder type)
+EulerAngles EulerAngles_create(const double x, const double y, const double z, const RotationOrder type, const AngleUnit unit)
 {
     EulerAngles euler;
 
@@ -42,6 +43,7 @@ EulerAngles EulerAngles_create(const double x, const double y, const double z, c
     euler.y = y;
     euler.z = z;
     euler.type = type;
+    euler.unit = unit;
 
     return euler;
 }
@@ -63,6 +65,8 @@ EulerAngles EulerAngles_radians(const EulerAngles angles)
         anglesInRadians.y *= DEG_TO_RAD;
         anglesInRadians.z *= DEG_TO_RAD;
         anglesInRadians.unit = RADIANS;
+    } else {
+        anglesInRadians.unit = DEGREES;
     }
 
     return anglesInRadians;
@@ -85,6 +89,8 @@ EulerAngles EulerAngles_degrees(const EulerAngles angles)
         anglesInDegrees.y *= RAD_TO_DEG;
         anglesInDegrees.z *= RAD_TO_DEG;
         anglesInDegrees.unit = DEGREES;
+    } else {
+        anglesInDegrees.unit = RADIANS;
     }
 
     return anglesInDegrees;

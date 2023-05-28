@@ -163,6 +163,7 @@ EulerAngles Quaternion2EulerZYX(Quaternion q) {
     angles.z = atan2(siny_cosp, cosy_cosp);
 
     angles.type = ZYX;
+    angles.unit = RADIANS;
 
     return angles;
 }
@@ -234,6 +235,7 @@ EulerAngles Quaternion2EulerXYZ(Quaternion q) {
     angles.z = atan2(siny_cosp, cosy_cosp);
 
     angles.type = XYZ;
+    angles.unit = RADIANS;
 
     return angles;
 }
