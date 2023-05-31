@@ -291,7 +291,7 @@ Quaternion RotAxisAngle2Quaternion(const RotAxisAngle rotation)
     q.y = s * rotation.axis.y;
     q.z = s * rotation.axis.z;
 
-    return q;
+    return Quaternion_normalize(q);
 }
 
 #endif
