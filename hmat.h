@@ -70,6 +70,29 @@ Hmat Hmat_relative(const Hmat h_i2c, const Hmat h_i2a)
 }
 
 /**
+ * @brief Wraps an angle in radians to the range -π to π (-180 to 180 degrees)
+ * 
+ * @param angle The angle in radians
+ * @return double The angle wrapped to the range -π to π
+ */
+double wrapAngleToPiRad(double angle)
+{
+    const double TWO_PI = 2.0 * M_PI;
+
+    angle = fmod(angle, TWO_PI);
+    if (angle <= -M_PI)
+    {
+        angle += TWO_PI;
+    }
+    else if (angle > M_PI)
+    {
+        angle -= TWO_PI;
+    }
+
+    return angle;
+}
+
+/**
  * @brief Compute the average hmat from h_i2a and h_i2b
  * 
  * @param h_i2b 
@@ -87,10 +110,12 @@ Hmat Hmat_average(const Hmat h_i2b, const Hmat h_i2a)
     
     // calc pose average
     axis_angle = Quaternion2RotAxisAngle(h_a2b.quat);
+    axis_angle.angle = wrapAngleToPiRad(axis_angle.angle);
     axis_angle.angle = 0.5*axis_angle.angle;
     h_a2c.quat = RotAxisAngle2Quaternion(axis_angle);
 
     return Hmat_composite(h_i2a, h_a2c);
 }
+
 
 #endif
